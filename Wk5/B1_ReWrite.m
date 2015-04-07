@@ -1,7 +1,7 @@
 %% Wk 5 Rewrite and modularization
 clear;close all;
 %% Section 0: Read file
-filename = '/wk5/2015-04-03_19-21-28.csv';
+filename = '/wk5_Break/2015-04-07_23-31-56.csv';
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
 %% Section 1: Rename all the input data from "SensorLog" App
@@ -25,9 +25,11 @@ B1F2_PlotRawData(time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,mag
 %% Section 6: Convert Roll Pitch & Yaw angle based on gyroscope ONLY
 [RollGyro,PitchGyro,YawGyro] = B1F6_GyroConvertRollPitchYaw(time,gyroXft,gyroYft,gyroZft);
 
-%% Section 7: Magnetometer Calibration
+%% NEED TO REWRITE LATER: For now, I will use Xcode True Heading
+% Section 7: Magnetometer Calibration
 %  MagnetCalibFactor: 0 Use Constant/ 1 Need Calibration
-MagnetCalibFactor = 0;
-[magnetXCab,magnetYCab,magnetZCab] = B1F7_MagnetCalibration(MagnetCalibFactor,magnetX,magnetY,magnetZ);
+% MagnetCalibFactor = 1;
+% [magnetXCab,magnetYCab,magnetZCab] = B1F7_MagnetCalibration(MagnetCalibFactor,magnetX,magnetY,magnetZ);
 
-%% Section 8: Convert Yaw angle based on megnatometer ONLY
+% Section 8: Convert Yaw angle based on megnatometer ONLY
+%% Section 9: Convert all data to same coordinate system

@@ -48,46 +48,67 @@ xlabel('time(s)');
 
 % 2. find offset value for each axis
 % The following data are from the calib file in wk 3
-magnetXoffset = -13.1888;
-magnetYoffset = 11.6191;
-magnetZoffset = 11.3490;
+% magnetXoffset = -13.1888;
+% magnetYoffset = 11.6191;
+% magnetZoffset = 11.3490;
 % Calculation of the offset value(1st time only)
 % magnetXoffset = (magnetXmax + magnetXmin) / 2;
 % magnetYoffset = (magnetYmax + magnetYmin) / 2;
 % magnetZoffset = (magnetZmax + magnetZmin) / 2;
 
 % 3.Raw data - offset to resample the data
-magnetXCab = magnetX - magnetXoffset;
-magnetYCab = magnetY - magnetYoffset;
-magnetZCab = magnetZ - magnetZoffset;
+% magnetXCab = magnetX - magnetXoffset;
+% magnetYCab = magnetY - magnetYoffset;
+% magnetZCab = magnetZ - magnetZoffset;
 
 % 4. Use accel Pitch and Roll angle from accelrometer to get the Ref heading
-Xh = magnetXCab .* cosd(PitchAccel) + magnetYCab .* sind(RollAccel).*sind(PitchAccel) - magnetZCab .* cosd(RollAccel) .* sind(PitchAccel);
-Yh = magnetYCab .* cosd(RollAccel) + magnetZCab .* sind(PitchAccel);
+% Method 1: from that PDF
+% Xh = magnetXCab .* cosd(PitchAccel) + magnetYCab .* sind(RollAccel).*sind(PitchAccel) - magnetZCab .* cosd(RollAccel) .* sind(PitchAccel);
+% Yh = magnetYCab .* cosd(RollAccel) + magnetZCab .* sind(PitchAccel);
+% Method 2:
+Xh = magnetXCab .* cosd(PitchAccel) + magnetZCab .* sind(PitchAccel);
+Yh = magnetXCab .* sind(RollAccel).*sind(PitchAccel) + magnetYCab .* cosd(RollAccel) - magnetZCab .* sind(RollAccel) .* cosd(PitchAccel);
 
 
 % 5. Calculate Megnetic angle based on 
-for n=1:length(time)
-if Xh(n)<0
-    magnetAngle(n,1)=180-atand(Yh(n)./Xh(n));
-elseif Xh(n)>0 && Yh(n)<0
-    magnetAngle(n,1)=-atand(Yh(n)./Xh(n));
-elseif Xh(n)>0 && Yh(n)>0
-    magnetAngle(n,1)=360-atand(Yh(n)./Xh(n));
+% Method 1:
+% for n=1:length(time)
+% if Xh(n)<0
+%     magnetAngle(n,1)=180-atand(Yh(n)/Xh(n));
+% elseif Xh(n)>0 && Yh(n)<0
+%     magnetAngle(n,1)=-atand(Yh(n)/Xh(n));
+% elseif Xh(n)>0 && Yh(n)>0
+%     magnetAngle(n,1)=360-atand(Yh(n)/Xh(n));
+% elseif Xh(n)==0 && Yh(n)<0
+%     magnetAngle(n,1)=90;    
+% elseif Xh(n)==0 && Yh(n)>0
+%     magnetAngle(n,1)=270; 
+% end
+% end
+
+% Method 2:
+magnetAngle = atan2d(Yh,Xh);
+declination = 12.26;
+headingOffset = 81;     %special offset for iphone
+magnetAngle = magnetAngle + declination - headingOffset;
+for n=1:length(magnetAngle)
+if magnetAngle(n,1) < 0
+    magnetAngle(n,1) = magnetAngle(n,1) + 360;
+elseif magnetAngle(n,1) > 360
+    magnetAngle(n,1) = magnetAngle(n,1) - 360;
 elseif Xh(n)==0 && Yh(n)<0
     magnetAngle(n,1)=90;    
 elseif Xh(n)==0 && Yh(n)>0
     magnetAngle(n,1)=270; 
 end
 end
-% test2 =-atan2(locationHeadingY,locationHeadingX).*180./pi;
 hold on;
-plot(time,magnetAngle,'c');
+plot(time,magnetAngle);
 hold off;
 legend('XcodeMagneticHeading','XCodeTrueHeading','matlabMagneticHeading');
 
 figure;
-plot(time,magnetAngle,'r');
+plot(time,magnetAngle,'b');
 grid on;
 title('Magnetometer Calibrated Angle data converted from Raw');
 xlabel('time(s)');

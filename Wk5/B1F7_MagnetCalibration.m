@@ -21,11 +21,22 @@ function [magnetXCab,magnetYCab,magnetZCab] = B1F7_MagnetCalibration(MagnetCalib
 % find offset value for each axis
 % Condition 1: No need for special calibration
 if MagnetCalibFactor == 0
-    magnetXoffset = -13.1888;
-    magnetYoffset = 11.6191;
-    magnetZoffset = 11.3490;
+    magnetXoffset = -4.9174;
+    magnetYoffset = -0.4461;
+    magnetZoffset = 1.9548;
 % Condition 2: Special calibration needed
 else if MagnetCalibFactor == 1
+    % Find max / min for each axis(1st time only)
+    magnetXmax = max(magnetX);
+    magnetXmin = min(magnetX);
+
+    magnetYmax = max(magnetY);
+    magnetYmin = min(magnetY);
+
+    magnetZmax = max(magnetZ);
+    magnetZmin = min(magnetZ);
+    
+    % Find offset value
     magnetXoffset = (magnetXmax + magnetXmin) / 2;
     magnetYoffset = (magnetYmax + magnetYmin) / 2;
     magnetZoffset = (magnetZmax + magnetZmin) / 2;

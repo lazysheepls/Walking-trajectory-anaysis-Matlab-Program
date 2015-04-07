@@ -2,7 +2,8 @@
 %  Details:
 %  1. In B1_Rewrite.m : call function and input all variable
 %  2. Run B1F4 function: - 1.Use complementary filter(low pass) kill noise
-%                        - 2.Plot raw data compare with filtered data
+%                        - 2.Elimate data bias
+%                        - 3.Plot raw data compare with filtered data
 %   INPUT: time
 %          gyroX,gyroY,gyroZ  
 %  OUTPUT: gyroXft,gyroYft,gyroZft
@@ -12,7 +13,6 @@ function [gyroXft,gyroYft,gyroZft] = B1F4_FilterNoiseGyroData(time,gyroX,gyroY,g
 % Complementary Filter for accelrometer
 kFilterFactor = 0.5;
 gyroLoop = 6;
-deltaT= time(2)-time(1);   % time interval per sampling
 
 % Initial var declear
 gyroSize = length(gyroX);
@@ -33,8 +33,44 @@ gyroZft = (gyroZft .* kFilterFactor) + (gyroZSHT .*(1-kFilterFactor));
 end
 
 % Cancel gyro bias and shifting
+% Calulate shift factor for X Y Z data
 
-% Compare raw data with filtered data
+% Try to improve the accuracy 
+% Find value close to 0 within first 100 data
+count = 100;
+Xabs = abs(gyroXft(1:count));
+[x,Xindex]=sort(Xabs);
+minX=gyroXft(Xindex(1));
+
+Yabs = abs(gyroYft(1:count));
+[y,Yindex]=sort(Yabs);
+minY=gyroYft(Yindex(1));
+
+Zabs = abs(gyroZft(1:count));
+[z,Zindex]=sort(Zabs);
+minZ=gyroZft(Zindex(1));
+
+[qX,pX]=find((gyroXft(1:count)-minX)<0.2||(gyroXft(1:count)-minX)<0.2);
+shiftX = sum(gyroXft(qX))/length(qX);
+
+[qY,pY]=find(abs((gyroYft(1:count)-minY))<0.2);
+shiftY = sum(gyroYft(qY))/length(qY);
+
+[qZ,pZ]=find(abs((gyroZft(1:count)-minZ))<0.2);
+shiftZ = sum(gyroZft(qZ))/length(qZ);
+
+sta = 100;
+fin = 170;
+shiftX = mean(gyroXft(sta:fin,1));
+shiftY = mean(gyroYft(sta:fin,1));
+shiftZ = mean(gyroZft(sta:fin,1));
+
+% Elimate bias
+gyroXft = gyroXft - shiftX;
+gyroYft = gyroYft - shiftY;
+gyroZft = gyroZft - shiftZ;
+
+%% Compare raw data with filtered data
 figure;
 % Raw data
 subplot(1,2,1);

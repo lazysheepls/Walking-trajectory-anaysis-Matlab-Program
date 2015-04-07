@@ -34,10 +34,41 @@ end
 
 % Cancel gyro bias and shifting
 % Calulate shift factor for X Y Z data
-count = 100;
-shiftX = sum(gyroXft(1:count,1))/count;
-shiftY = sum(gyroYft(1:count,1))/count;
-shiftZ = sum(gyroZft(1:count,1))/count;
+
+% Try to improve the accuracy and remove strange spike from calibration
+% Method 1: Find value close to 0 within first 150 data: 8.7sec
+count = 150;
+
+Xabs = abs(gyroXft(1:count));
+[x,Xindex]=sort(Xabs);
+minX=gyroXft(Xindex(1));   % X reading closest to 0
+
+Yabs = abs(gyroYft(1:count));
+[y,Yindex]=sort(Yabs);
+minY=gyroYft(Yindex(1));    % Y reading closest to 0
+
+Zabs = abs(gyroZft(1:count));
+[z,Zindex]=sort(Zabs);
+minZ=gyroZft(Zindex(1));    % Z reading closest to 0
+
+clearvars x y z Xindex Yindex Zindex;
+limit = 0.06;
+[x,Xindex]=find(abs((gyroXft(1:count)-minX))<limit);
+shiftX = mean(gyroXft(x));
+
+[y,Yindex]=find(abs((gyroYft(1:count)-minY))<limit);
+shiftY = mean(gyroYft(y));
+
+[z,Zindex]=find(abs((gyroZft(1:count)-minZ))<limit);
+shiftZ = mean(gyroZft(z));
+
+% Method 2: Directly take average from 100-170 data: 6-10sec
+% sta = 100;
+% fin = 170;
+% shiftX = mean(gyroXft(sta:fin,1));
+% shiftY = mean(gyroYft(sta:fin,1));
+% shiftZ = mean(gyroZft(sta:fin,1));
+
 % Elimate bias
 gyroXft = gyroXft - shiftX;
 gyroYft = gyroYft - shiftY;
