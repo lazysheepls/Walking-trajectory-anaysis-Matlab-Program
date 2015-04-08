@@ -4,12 +4,13 @@ clear;close all;
 filename = '/wk5_Break/2015-04-07_23-31-56.csv';
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
+% MagnetCalibFactor: 1: 1st set data,need to generate parameters  0:2ns set of data, use the parameters
+MagnetCalibFactor = 0;
 %% Section 1: Rename all the input data from "SensorLog" App
 %  Process file by "B1F1_HandleInputfile" function
 [time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy]=B1F1_HandleInputfile(T);
 %  Clear workspace
-clearvars -except time accelX accelY accelZ gyroX gyroY gyroZ magnetX magnetY magnetZ XcodeTrueHeading XcodeMagneticHeading XcodeHeadingAccuracy;
-
+clearvars T;
 %% Section 2: Plot raw data
 B1F2_PlotRawData(time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading);
 
@@ -27,9 +28,8 @@ B1F2_PlotRawData(time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,mag
 
 %% NEED TO REWRITE LATER: For now, I will use Xcode True Heading
 % Section 7: Magnetometer Calibration
-%  MagnetCalibFactor: 0 Use Constant/ 1 Need Calibration
-% MagnetCalibFactor = 1;
-% [magnetXCab,magnetYCab,magnetZCab] = B1F7_MagnetCalibration(MagnetCalibFactor,magnetX,magnetY,magnetZ);
-
+if MagnetCalibFactor ==1
+[magnetXCab,magnetYCab,magnetZCab,e_center,e_radii,e_eigenvecs,e_algebraic] = B1F7_MagnetCalibration(MagnetCalibFactor,magnetX,magnetY,magnetZ);
+else if
 % Section 8: Convert Yaw angle based on megnatometer ONLY
 %% Section 9: Convert all data to same coordinate system

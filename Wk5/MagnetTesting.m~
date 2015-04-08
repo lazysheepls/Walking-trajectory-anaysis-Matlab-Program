@@ -1,8 +1,0 @@
-close all;
-figure;
-plot3(magnetX,magnetY,magnetZ);
-title('Magnetometer butterfly data');
-xlabel('X');ylabel('Y');zlabel('Z');
-
-syms Yx Yy Yz R
-[Yx Yy Yz R] = solve((magnetX(10)-Yx)^2+(magnetY(10)-Yy)^2+(magnetZ(10)-Yx)^2-R^2=0,(magnetX(11)-Yx)^2+(magnetY(11)-Yy)^2+(magnetZ(11)-Yx)^2-R^2=0,)
