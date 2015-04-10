@@ -1,9 +1,9 @@
 %% Wk 5 Rewrite and modularization
 clear;close all;
 %% Section 0: Read file
-% 2015-04-08_21-14-29.csv
-% 2015-04-08_21-15-06.csv
-filename = '/wk5_Break/2015-04-08_21-15-06.csv';
+% 2015-04-08_23-15-30.csv
+% 2015-04-08_23-16-01.csv
+filename = '/wk5_Break/2015-04-08_23-16-01.csv';
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
 % MagnetCalibFactor: 1: 1st set data,need to generate parameters  2:2ns set of data, use the parameters

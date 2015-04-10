@@ -17,9 +17,9 @@ Yh = magnetXCab .* sind(RollAccel).*sind(PitchAccel) + magnetYCab .* cosd(RollAc
 % Calculate magnetometer heading
 magnetHeading = atan2d(Yh,Xh);
 % Compensate magnet declination from:  http://magnetic-declination.com/
-declination = 12.26;
+declination = 12.33;
 % iphone special 
-headingOffset = 81;     %special offset for iphone
+headingOffset = 87;     %special offset for iphone
 magnetHeading = magnetHeading + declination - headingOffset;
 for n=1:length(magnetHeading)
 if magnetHeading(n,1) < 0
