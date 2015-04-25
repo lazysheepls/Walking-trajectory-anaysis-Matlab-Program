@@ -3,11 +3,11 @@ clear;close all;
 %% Section 0: Read file
 % 2015-04-08_23-15-30.csv
 % 2015-04-08_23-16-01.csv
-filename = '/wk5_Break/2015-04-08_23-16-01.csv';
+filename = '/wk5_Break/2015-04-08_23-15-30.csv';
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
 % MagnetCalibFactor: 1: 1st set data,need to generate parameters  2:2ns set of data, use the parameters
-MagnetCalibFactor = 2;
+MagnetCalibFactor = 1;
 %% Section 1: Rename all the input data from "SensorLog" App
 %  Process file by "B1F1_HandleInputfile" function
 [time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy]=B1F1_HandleInputfile(T);
