@@ -1,16 +1,16 @@
 %% Wk 5 Rewrite and modularization
 clear;close all;
 %% Section 0: Read file
-% 2015-04-08_23-15-30.csv
-% 2015-04-08_23-16-01.csv
-filename = '/wk5_Break/2015-04-08_23-15-30.csv';
+% 2015-04-09_17-00-05.csv
+% 2015-04-09_17-00-28.csv
+filename = '/wk7/2015-04-09_17-00-28.csv';
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
 % MagnetCalibFactor: 1: 1st set data,need to generate parameters  2:2ns set of data, use the parameters
-MagnetCalibFactor = 1;
+MagnetCalibFactor = 2;
 %% Section 1: Rename all the input data from "SensorLog" App
 %  Process file by "B1F1_HandleInputfile" function
-[time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy]=B1F1_HandleInputfile(T);
+[time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy,Lat,Long]=B1F1_HandleInputfile(T);
 %  Clear workspace
 clearvars T;
 %% Section 2: Plot raw data
