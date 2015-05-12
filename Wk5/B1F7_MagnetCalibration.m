@@ -19,11 +19,11 @@
 %% function
 function [magnetXCab,magnetYCab,magnetZCab,e_center,e_radii,e_eigenvecs,e_algebraic] = B1F7_MagnetCalibration(MagnetCalibFactor,magnetX,magnetY,magnetZ,e_center,e_radii,e_eigenvecs,e_algebraic)
 %% Calibration Process: To obtain parameters
-if MagnetCalibFactor == 1   % Factor=1 Need to calibrate related parameters
+if MagnetCalibFactor == 2   % Factor=1 Need to calibrate related parameters
 %  Call ellipsoid_fit function:
 [e_center, e_radii, e_eigenvecs, e_algebraic] = ellipsoid_fit([magnetX, magnetY, magnetZ]);
 %% After getting the calib parameter: Use these parameters to calibrate 2nd set of data
-elseif MagnetCalibFactor == 2 % Factor=0 2nd set of data that need to use the parameters
+elseif MagnetCalibFactor == 3 % Factor=0 2nd set of data that need to use the parameters
 %  Do nothing  
 end
 %%

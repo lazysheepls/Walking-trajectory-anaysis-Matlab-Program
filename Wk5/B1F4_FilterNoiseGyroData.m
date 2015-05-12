@@ -9,7 +9,7 @@
 %  OUTPUT: gyroXft,gyroYft,gyroZft
 
 %% Function
-function [gyroXft,gyroYft,gyroZft] = B1F4_FilterNoiseGyroData(time,gyroX,gyroY,gyroZ)
+function [gyroXft,gyroYft,gyroZft,shiftX,shiftY,shiftZ] = B1F4_FilterNoiseGyroData(time,gyroX,gyroY,gyroZ,shiftX,shiftY,shiftZ,CalibFactor)
 % Complementary Filter for accelrometer
 kFilterFactor = 0.5;
 gyroLoop = 6;
@@ -22,22 +22,23 @@ gyroYft = gyroY;
 gyroZft = gyroZ;
 
 % Apply complementary filter
-for gyroLoop=1:6
-gyroXSHT = circshift(gyroXft,1);
-gyroYSHT = circshift(gyroYft,1); 
-gyroZSHT = circshift(gyroZft,1);
-
-gyroXft = (gyroXft .* kFilterFactor) + (gyroXSHT .*(1-kFilterFactor));
-gyroYft = (gyroYft .* kFilterFactor) + (gyroYSHT .*(1-kFilterFactor));
-gyroZft = (gyroZft .* kFilterFactor) + (gyroZSHT .*(1-kFilterFactor));
-end
+% for gyroLoop=1:6
+% gyroXSHT = circshift(gyroXft,1);
+% gyroYSHT = circshift(gyroYft,1); 
+% gyroZSHT = circshift(gyroZft,1);
+% 
+% gyroXft = (gyroXft .* kFilterFactor) + (gyroXSHT .*(1-kFilterFactor));
+% gyroYft = (gyroYft .* kFilterFactor) + (gyroYSHT .*(1-kFilterFactor));
+% gyroZft = (gyroZft .* kFilterFactor) + (gyroZSHT .*(1-kFilterFactor));
+% end
 
 % Cancel gyro bias and shifting
 % Calulate shift factor for X Y Z data
 
 % Try to improve the accuracy and remove strange spike from calibration
 % Method 1: Find value close to 0 within first 150 data: 8.7sec
-count = 150;
+if CalibFactor == 1
+count = length(gyroXft);
 
 Xabs = abs(gyroXft(1:count));
 [x,Xindex]=sort(Xabs);
@@ -52,7 +53,7 @@ Zabs = abs(gyroZft(1:count));
 minZ=gyroZft(Zindex(1));    % Z reading closest to 0
 
 clearvars x y z Xindex Yindex Zindex;
-limit = 0.06;
+limit = 10;
 [x,Xindex]=find(abs((gyroXft(1:count)-minX))<limit);
 shiftX = mean(gyroXft(x));
 
@@ -61,6 +62,7 @@ shiftY = mean(gyroYft(y));
 
 [z,Zindex]=find(abs((gyroZft(1:count)-minZ))<limit);
 shiftZ = mean(gyroZft(z));
+end
 
 % Method 2: Directly take average from 100-170 data: 6-10sec
 % sta = 100;
@@ -69,10 +71,16 @@ shiftZ = mean(gyroZft(z));
 % shiftY = mean(gyroYft(sta:fin,1));
 % shiftZ = mean(gyroZft(sta:fin,1));
 
-% Elimate bias
+
+% Elimate bias: Complementary filtered data
+% wk9 data only
+% gyroXft = gyroXft - shiftX-0.006;
+% gyroYft = gyroYft - shiftY+0.01;
+% gyroZft = gyroZft - shiftZ+0.0058;  % magic number: for wk9 data only
+
 gyroXft = gyroXft - shiftX;
 gyroYft = gyroYft - shiftY;
-gyroZft = gyroZft - shiftZ;
+gyroZft = gyroZft - shiftZ+0.0058;  % magic number: for wk9 data only
 
 %% Compare raw data with filtered data
 figure;
@@ -82,7 +90,7 @@ plot(time,gyroX,'m');hold on;
 plot(time,gyroY,'b');hold on;
 plot(time,gyroZ,'r');
 title('gyroel 04 Raw data');
-xlabel('Time(s)');ylabel('Data(m/s^2)');
+xlabel('Time(s)');ylabel('Angular speed(rad/s)');
 hold off;grid on;
 legend('x','y','z');
 % Filtered data

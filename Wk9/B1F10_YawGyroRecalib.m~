@@ -1,0 +1,15 @@
+%% B1F10 function: Gyro Yaw angle recalibrated before datafusion
+%  Details:
+%  1. In B1_Rewrite.m : call function and input all variable
+%  2. Run B1F9 function: 1.Flip gyro angle: 360-YawGyro
+%                        2.add inital compass angle to all data
+%                        3.The whole purpose is to align gyro angle with
+%                        GPS and compass angle
+%   INPUT: YawGyro,XcodeTrueHeading
+%  OUTPUT: YawGyroCalib
+
+%% Function
+function [YawGyroCalib] = B1F10_YawGyroRecalib(XcodeTrueHeading,YawGyro)
+% Since first
+YawGyroCalib = 360-YawGyro;
+end

@@ -13,7 +13,7 @@
 %          Lat,Long (stands for GPS data:Latitude,Longitude)
      
 %% Function
-function [time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy,Lat,Long] = B1F1_HandleInputfile(T)
+function [time,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnetX,magnetY,magnetZ,XcodeTrueHeading,XcodeMagneticHeading,XcodeHeadingAccuracy,Lat,Long,GPSspeed,GPScourse] = B1F1_HandleInputfile(T)
 %  Rearrange time
 time = T.accelerometerTimestamp_sinceReboot;
 time = time - time(1);
@@ -36,4 +36,6 @@ XcodeHeadingAccuracy = T.locationHeadingAccuracy;
 %  GPS data
 Lat = T.locationLatitude;
 Long = T.locationLongitude;
+GPSspeed = T.locationSpeed;
+GPScourse = T.locationCourse;
 end

@@ -1,4 +1,4 @@
-%% B1F5 function: Convert Accelerometer filtered data to roll and pitch angle
+%% B1F6 function: Convert Accelerometer filtered data to roll and pitch angle
 %  Details:
 %  1. In B1_Rewrite.m : call function and input all variable
 %  2. Run B1F5 function: - 1.Use complementary filter(low pass) kill noise

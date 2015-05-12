@@ -112,3 +112,8 @@ ylabel('Y(m)');
 axis equal;
 
 %% Add Magnetometer data arrow into consideration
+%  Step 1: Plot magnet direction arrow on the rough estimation
+%  Mode selection flag: 1. GPS speed mode
+%                       2. Accel speed mode
+%                       3. Average speed per step mode(
+SpeedMode = 1;
