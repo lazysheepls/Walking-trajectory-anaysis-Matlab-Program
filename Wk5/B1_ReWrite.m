@@ -100,9 +100,16 @@ end
 %                           2. Average speed per step mode(NOTE: NOT Pedometer)
 %                           3. Accel speed mode(**NOTE:Not available**Check accelGetSpeedTest.m**)
 
-stepSize = 0.65;  % 65cm fixed for now
+stepSize = 0.7;  % 65cm fixed for now
 [GPSspeed,stepSpeed] = B1F11_SpeedModeSelection(GPSspeed,accelX,accelY,time,stepLocs,stepGaps,stepSize);
 
-%% Section 12: DataFusion
+%% Section 12: DataFusionBaseGyro
+%  Gyro as base data, running at the highest frequency(30Hz).
+%  Output distance and GPS coordinate.
+%  Speed Mode: 1. stepSpeed(estimated step Size)
+%              2. GPSspeed (measured by GPS vary a lot)
+speedMode = 1;
+
+[] = B1F12_DataFusionBaseGyro(GPSspeed,stepSpeed,speedMode,YawGyroCalib,time,)
 
 %% Section 13: Pedometer algorithm: Analysis data in step based mode

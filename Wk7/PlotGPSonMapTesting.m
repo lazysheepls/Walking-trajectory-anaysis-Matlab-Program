@@ -8,7 +8,7 @@
 %%
 close all;
 lat = Lat
-lon = Long;
+lon = Lon;
 plot(lon,lat,'.r','MarkerSize',20)
 hold on;
 % lat = [60 60 73 54 32 69]; 

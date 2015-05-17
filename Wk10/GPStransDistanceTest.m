@@ -6,7 +6,7 @@ for i=1:length(Lat)
     % Update stage: Fuse GPS position in:
     R = 6370.8;  % Earth Radius(km)
     if rem(i,GPSfusionSize)==0
-        dlon = Long(i) - Long(i-GPSfusionSize+1); 
+        dlon = Lon(i) - Lon(i-GPSfusionSize+1); 
         dlat = Lat(i) - Lat(i-GPSfusionSize+1); 
         a = (sind(dlat/2))^2 + cosd(Lat(i-GPSfusionSize+1)) * cosd(Lat(i)) * (sind(dlon/2))^2; 
         c = 2 * atan2( sqrt(a), sqrt(1-a)) ;
