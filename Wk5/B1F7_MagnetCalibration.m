@@ -21,7 +21,7 @@ function [magnetXCab,magnetYCab,magnetZCab,e_center,e_radii,e_eigenvecs,e_algebr
 %% Calibration Process: To obtain parameters
 if MagnetCalibFactor == 2   % Factor=1 Need to calibrate related parameters
 %  Call ellipsoid_fit function:
-[e_center, e_radii, e_eigenvecs, e_algebraic] = ellipsoid_fit([magnetX, magnetY, magnetZ]);
+[e_center, e_radii, e_eigenvecs, e_algebraic] = ellipsoid_fit([magnetX, magnetY, mcagnetZ]);
 %% After getting the calib parameter: Use these parameters to calibrate 2nd set of data
 elseif MagnetCalibFactor == 3 % Factor=0 2nd set of data that need to use the parameters
 %  Do nothing  
@@ -49,8 +49,8 @@ fprintf( 'Ellpisoid comp evecs :\n                   %.6g %.6g %.6g\n           
 % draw data
 figure;
 hold on;
-plot3( magnetX, magnetY, magnetZ, '.r' ); % original magnetometer data
-plot3(S(1,:), S(2,:), S(3,:), 'b.'); % compensated data
+plot3( magnetX, magnetY, magnetZ, 'b' ); % original magnetometer data
+plot3(S(1,:), S(2,:), S(3,:), 'r'); % compensated data
 view( -70, 40 );
 axis vis3d;axis equal;
 legend('Raw Data','Compensated Data');
@@ -63,7 +63,7 @@ plot3( magnetX, magnetY, magnetZ, '.r' );
 maxd = max(e_radii);
 step = maxd / 50;
 [xp, yp, zp] = meshgrid(-maxd:step:maxd + e_center(1), -maxd:step:maxd + e_center(2), -maxd:step:maxd + e_center(3));
-% Rebuild the ellipsoid:
+% Rebuild the ellipsoid into sphere:
 Ellipsoid = e_algebraic(1) *xp.*xp +   e_algebraic(2) * yp.*yp + e_algebraic(3)   * zp.*zp + ...
           2*e_algebraic(4) *xp.*yp + 2*e_algebraic(5) * xp.*zp + 2*e_algebraic(6) * yp.*zp + ...
           2*e_algebraic(7) *xp     + 2*e_algebraic(8) * yp     + 2*e_algebraic(9) * zp;

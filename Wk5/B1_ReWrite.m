@@ -17,7 +17,11 @@ close all;
 % 2015-05-12_17-08-07.csv
 % 2015-05-12_17-08-34.csv
 % 2015-05-12_17-08-57.csv
-filename = '/wk10/set7/2015-05-12_17-08-57.csv'; 
+% Set 8: Long distance walk
+% 2015-05-21_13-10-33.csv
+% 2015-05-21_13-10-50.csv
+% 2015-05-21_13-11-03.csv
+filename = '/wk11/LongDistance2/2015-05-21_13-11-03.csv'; 
 filelocation = ['/Users/lazysheep/Study/Thesis/sensor logging Raw files',filename];
 T = readtable(filelocation);
 % CalibFactor: 1: Calib gyro(place on flat surface)  
@@ -71,6 +75,7 @@ load('MagnetTempCalib');
 end
 
 %% Section 8: Convert to heading angles based on megnatometer ONLY
+% With accelrometer angle compensation tech
 [magnetHeading] = B1F8_MagnetConvertHeading(time,magnetXCab,magnetYCab,magnetZCab,PitchAccel,RollAccel,XcodeMagneticHeading,XcodeTrueHeading);
 % Now We could either use magnetHeading/ XcodeTruHeading(XcodeTureHeading is still more accurate)
 
@@ -108,8 +113,72 @@ stepSize = 0.7;  % 65cm fixed for now
 %  Output distance and GPS coordinate.
 %  Speed Mode: 1. stepSpeed(estimated step Size)
 %              2. GPSspeed (measured by GPS vary a lot)
-speedMode = 1;
+%  R: Radius of the earth(km)
+speedMode = 2;
+R = 6370.8;
+[posXgyro,posYgyro,angleGyro,walkspeed,LonGyro,LatGyro] = B1F12_DataFusionBaseGyro(GPSspeed,stepSpeed,speedMode,YawGyroCalib,time,Lat,Lon,R);
 
-[] = B1F12_DataFusionBaseGyro(GPSspeed,stepSpeed,speedMode,YawGyroCalib,time,)
+%% Section 13: DataFusionGyro+Compass
+% DataFusion: Gyro run as the highest frequency(30Hz)
+% So compass run at about(15-20HZ), 15Hz as default(2times)
+% Compass Fuse Mode: 1.use XcodeTrueHeading
+%                    2.use magnetHeading
+CmpFuseMode = 1;
+CmpFuseSize = 2; %1:30Hz(only plot every 2 data) 2:15Hz(special plot required)
+CmpFuseAlpha = 0.8; % alpha weight
+[posXFuseCmp,posYFuseCmp,angleFuseCmp,LonFuseCmp,LatFuseCmp] = B1F13_DataFusionPlusCompass(CmpFuseMode,CmpFuseSize,CmpFuseAlpha,posXgyro,posYgyro,angleGyro,walkspeed,XcodeTrueHeading,magnetHeading,time,Lon,Lat,R);
+% Add filtering to the out put
+for k=1:15
+for i=2:length(posXFuseCmp)
+    posXFuseCmp(i)=posXFuseCmp(i)*0.8+posXFuseCmp(i-1)*0.2;
+end
+end
+% Compare angle
+figure;
+plot(time,angleGyro,'b');hold on;
+plot(time,XcodeTrueHeading,'g');hold on;
+plot(time,angleFuseCmp,'r');
+xlabel('Time(s)');
+ylabel('Heading angle(degree)');
+legend('Gyro Heading','Compass Heading','Fused Heading');
+% Compare position
+figure;
+plot(posYgyro,posXgyro,'b','Linewidth',5);hold on;
+plot(posYFuseCmp,posXFuseCmp,'r');
+xlabel('PositionY');ylabel('PositionX');
+legend('Path based on Gyro','Path based on fused data');
+title('Path Comparison');
+% Plot onto the map
+figure;
+plot(LonGyro,LatGyro,'.b','MarkerSize',20);hold on;
+plot(LonFuseCmp,LatFuseCmp,'.r','MarkerSize',20);hold on;
+hold on;
+plot_google_map('MapType','satellite')
+title('Fused Data: Gyro Path vs +Compass Path');
 
-%% Section 13: Pedometer algorithm: Analysis data in step based mode
+%% Section 14: GPS data fusion
+figure;
+LonFuseGPS = LonFuseCmp;
+LatFuseGPS = LatFuseCmp;
+size = 100;
+for i=size+1:size:length(Lon)
+    LonFuseGPS(i)= 0.8*Lon(i)+0.2*LonFuseGPS(i);
+    LatFuseGPS(i)= 0.8*Lat(i)+0.2*LatFuseGPS(i);
+    plot(Lon(i),Lat(i),'.g','MarkerSize',10);hold on;
+end
+% Filter
+for k=1:2
+for i=2:length(Lon)
+    LonFuseGPS(i) = 0.3*LonFuseGPS(i)+0.7*Lon(i-1);
+    LatFuseGPS(i) = 0.3*LatFuseGPS(i)+0.7*Lat(i-1);
+end
+end
+% Plot on map
+plot(LonFuseCmp,LatFuseCmp,'.b','MarkerSize',25);hold on;
+plot(LonFuseGPS,LatFuseGPS,'.r','MarkerSize',10);
+for i=100+1:80:length(Lon)
+    plot(Lon(i),Lat(i),'.g','MarkerSize',5);hold on;
+end
+hold on;
+plot_google_map('MapType','satellite')
+title('Fused Data: Compass+Gyro Path vs +GPS Fuse');

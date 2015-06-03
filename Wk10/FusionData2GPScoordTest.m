@@ -5,18 +5,6 @@ LatNEW=Lat;LonNEW=Lon;
 Dis2Origin=[0];  %Distance between 2 points
 R=6370.8;
 
-% Distance from the original point
-for i=2:length(posX2)
-    Dis2Origin = [Dis2Origin;sqrt((posX2(i)-posX2(1))^2+(posY2(i)-posY2(1))^2)/1000]; %unit:km
-end
-%%
-for i=2:length(posX2)
-    LatNEW(i,1) = asind(sind(Lat(1)).*cos(Dis2Origin(i)/R)+cos(Lat(1)).*sin(Dis2Origin(i)/R).*cosd(-rem(angle2(i)+180,360)));
-    LonNEW(i,1) = Lon(1)+ atan2d(sind(-rem(angle2(i)+180,360)).*sin(Dis2Origin(i)/R).*cosd(Lat(1)),(cos(Dis2Origin(i)/R)-(sind(Lat(1)).*sind(LatNEW(i)))));
-    hold on;
-%     plot(LonNEW(i),LatNEW(i),'.r');
-end
-
 %% THIS WORKS!!!!!(Gyro+Compass trans to GPS Coord)
 %  Prep for distance and angle
 Dis2OriginNEW = zeros(length(posX2),1);
@@ -27,11 +15,11 @@ for i=SIZE:SIZE:length(posX2)
     angleGG(i,1) = angle2(i)-angle2(i-SIZE+1);  % unit:degree
 end
 %  Trans to GPS
-figure;
-LatNEW=Lat;LonNEW=Lon;
+figure(1);
+% LatNEW=Lat;LonNEW=Lon;
 for i=SIZE:SIZE:length(posX2)
-    LatNEWNN(i,1) = asind(sind(Lat(i-SIZE+1)).*cos(Dis2Origin(i)/R)+cos(Lat(i-SIZE+1)).*sin(Dis2OriginNEW(i)/R).*cosd(-rem(angleGG(i)+180,360)));
-    LonNEWNN(i,1) = Lon(i-SIZE+1)+ atan2d(sind(-rem(angleGG(i)+180,360)).*sin(Dis2Origin(i)/R).*cosd(Lat(1)),(cos(Dis2OriginNEW(i)/R)-(sind(Lat(i-SIZE+1)).*sind(LatNEWNN(i)))));
+    LatNEWNN(i,1) = asind(sind(Lat(i-SIZE+1)).*cos(Dis2OriginNEW(i)/R)+cos(Lat(i-SIZE+1)).*sin(Dis2OriginNEW(i)/R).*cosd(-rem(angleGG(i)+180,360)));
+    LonNEWNN(i,1) = Lon(i-SIZE+1)+ atan2d(sind(-rem(angleGG(i)+180,360)).*sin(Dis2OriginNEW(i)/R).*cosd(Lat(1)),(cos(Dis2OriginNEW(i)/R)-(sind(Lat(i-SIZE+1)).*sind(LatNEWNN(i)))));
     hold on;
     plot(LonNEWNN(i),LatNEWNN(i),'.b','MarkerSize',20);
 end
@@ -43,12 +31,12 @@ for i=SIZE:SIZE:length(posX2)
     LatFuse(i)=alphaGPSFuse.*LatNEWNN(i)+(1-alphaGPSFuse).*Lat(i);
     LonFuse(i)=alphaGPSFuse.*LonNEWNN(i)+(1-alphaGPSFuse).*Lon(i);
     hold on;
-    plot(LonFuse(i),LatFuse(i),'.c','MarkerSize',20);
+    plot(LonFuse(i),LatFuse(i),'.c','MarkerSize',15);
 end
 %% Plot the diagram
 % figure;plot(Dis2Origin)
 hold on;
-plot(Lon,Lat,'.r','MarkerSize',20)
+plot(Lon,Lat,'.r','MarkerSize',5)
 % hold on;
 % plot(LonNEW(1),LatNEW(1),'.r','MarkerSize',20)
 % hold on;
@@ -56,5 +44,5 @@ plot(Lon,Lat,'.r','MarkerSize',20)
 % hold on;
 % plot(LonNEW(1000),LatNEW(1000),'.r','MarkerSize',20)
 hold on;
-plot_google_map('MapType','satellite');
-title('Fused Data: Compass+Gyro Path');
+plot_google_map('MapType','satellite')
+title('Fused Data: Compass+Gyro Path vs +GPS Fuse');

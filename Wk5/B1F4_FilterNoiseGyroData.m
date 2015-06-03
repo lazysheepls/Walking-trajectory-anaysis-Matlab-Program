@@ -80,8 +80,8 @@ end
 
 gyroXft = gyroXft - shiftX;
 gyroYft = gyroYft - shiftY;
-gyroZft = gyroZft - shiftZ+0.0058;  % magic number: for wk9 data only
-
+gyroZft = gyroZft - shiftZ+0.0085;  % magic number: for wk9 data only
+% +0.0058
 %% Compare raw data with filtered data
 figure;
 % Raw data
